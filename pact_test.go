@@ -1,8 +1,9 @@
 package main
 
 import (
+	"fmt"
 	"log"
-	"net/http"
+	"os"
 	"testing"
 
 	"github.com/pact-foundation/pact-go/dsl"
@@ -11,36 +12,43 @@ import (
 )
 
 func TestProvider(t *testing.T) {
-	pact := &dsl.Pact{
-		Consumer:                 "GoConsumerContractTesting",
-		Provider:                 "GoProviderContractTesting",
-		DisableToolValidityCheck: true,
-		LogDir:                   "logs",
-		PactDir:                  "pacts",
-	}
-
 	// Start the API in the background
 	go startAPI()
 
-	// Verify the Provider
-	_, err := pact.VerifyProvider(t, types.VerifyRequest{
-		ProviderBaseURL: "http://localhost:8080",
-		PactURLs:        []string{"./pacts/chattemplateconsumer-chattemplateprovider.json"}, // Path to the local Pact file
-	})
+	var dir, _ = os.Getwd()
+	var pactDir = fmt.Sprintf("%s/pacts", dir)
+	var logDir = fmt.Sprintf("%s/logs", dir)
+	pact := &dsl.Pact{
+		Provider:                 "GoProviderContractTesting",
+		DisableToolValidityCheck: true,
+		LogDir:                   logDir,
+		PactDir:                  pactDir,
+	}
 
+	_, err := pact.VerifyProvider(t, types.VerifyRequest{
+		ProviderBaseURL:            "http://localhost:8080",      //provider's URL
+		BrokerURL:                  "https://harsh.pactflow.io/", //link to your remote Contract broker
+		BrokerToken:                "2_KfMXbOMRXKAd30PwopTg",     //your PactFlow token
+		PublishVerificationResults: true,
+		ProviderVersion:            "1.0.0",
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	assert.NoError(t, err)
+
+	// Verify the Provider
+	log.Println("[debug] start verification")
+	_, err = pact.VerifyProvider(t, types.VerifyRequest{
+		ProviderBaseURL: "http://localhost:8080",
+		PactURLs:        []string{"pacts/goconsumercontracttesting-goprovidercontracttesting.json"}, // Path to the local Pact file
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
 	assert.NoError(t, err)
 }
 
 func startAPI() {
-	http.HandleFunc("/actions/bcd/chat-template", func(w http.ResponseWriter, r *http.Request) {
-		resp, err := Handler()
-		if err != nil {
-			http.Error(w, err.Error(), resp.StatusCode)
-			return
-		}
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(resp.StatusCode)
-		w.Write([]byte(resp.Body))
-	})
-	log.Fatal(http.ListenAndServe(":8082", nil))
+	main()
 }
