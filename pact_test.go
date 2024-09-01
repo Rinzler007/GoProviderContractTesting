@@ -19,7 +19,7 @@ func TestProvider(t *testing.T) {
 	var pactDir = fmt.Sprintf("%s/pacts", dir)
 	var logDir = fmt.Sprintf("%s/logs", dir)
 	pact := &dsl.Pact{
-		Provider:                 "GoProviderContractTesting",
+		Provider:                 "unv-bcd-chat-pdr",
 		DisableToolValidityCheck: true,
 		LogDir:                   logDir,
 		PactDir:                  pactDir,
@@ -41,7 +41,7 @@ func TestProvider(t *testing.T) {
 	log.Println("[debug] start verification")
 	_, err = pact.VerifyProvider(t, types.VerifyRequest{
 		ProviderBaseURL: "http://localhost:8080",
-		PactURLs:        []string{"pacts/goconsumercontracttesting-goprovidercontracttesting.json"}, // Path to the local Pact file
+		PactURLs:        []string{"pacts/toolbar-chat-api-unv-bcd-chat-pdr.json"}, // Path to the local Pact file
 	})
 	if err != nil {
 		t.Fatal(err)
