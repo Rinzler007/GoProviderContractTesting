@@ -1,57 +1,118 @@
-import os
 import unittest
 from pact import Verifier
 
 class ProviderPactTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        """Initialize paths and configurations."""
-        # Base URL where the provider is running (without endpoint and query parameters)
-        cls.provider_base_url = 'http://localhost:8080'
 
-        # Provider and Consumer names
-        cls.provider_name = 'unv-bcd-chat-pdr'
-        cls.consumer_name = 'toolbar-chat-api'
+    def setUp(self):
+        """
+        Setup the provider verification test. This includes defining
+        the base URL of the provider and any headers like Authorization
+        that are required.
+        """
+        self.provider_url = "https://awscc-eu-dev-api.barclays.intranet/bcd-dev/actions/bcd/chat-template"
+        self.auth_token = "Bearer your_dynamic_token_here"  # Update this with the current token
+        self.headers = {
+            "Authorization": self.auth_token
+        }
 
-        # Path to the pact file directory
-        cls.pact_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), 'pacts'))
-        
-        # Ensure the pact directory exists
-        if not os.path.exists(cls.pact_dir):
-            raise FileNotFoundError(f"Pact directory not found at {cls.pact_dir}")
+    def test_verify_consumer_fullserve(self):
+        """
+        Verifies the contract for the 'fullserve' consumer scenario.
+        """
+        pact_file = "./pacts/toolbar-chat-api-unv-bcd-chat-pdr.json"  # Path to the Consumer Pact file
 
-    def test_provider_pacts(self):
-        """Verify provider against the pact file."""
-        verifier = Verifier(
-            provider=self.provider_name,
-            provider_base_url=self.provider_base_url,
-            state_change_url='http://localhost:8080/setup'  # Endpoint to set provider states
-            # Uncomment and set if using a Pact Broker
-            # pact_broker_url=os.getenv('PACT_BROKER_URL'),
-            # broker_username=os.getenv('PACT_BROKER_USERNAME'),
-            # broker_password=os.getenv('PACT_BROKER_PASSWORD'),
+        verifier = Verifier(provider="bcd-chat-pdr")
+        result = verifier.verify_pacts(
+            pact_file=pact_file,
+            provider_base_url=f"{self.provider_url}?consumer=fullserve",
+            headers=self.headers
         )
+        self.assertEqual(result, 0, "Provider verification failed for 'fullserve' consumer")
 
-        # Path to the specific pact file
-        pact_file_relative = 'toolbar-chat-api-unv-bcd-chat-pdr.json'
-        pact_file_absolute = os.path.join(self.pact_dir, pact_file_relative)
+    def test_verify_consumer_veripark(self):
+        """
+        Verifies the contract for the 'veripark' consumer scenario.
+        """
+        pact_file = "./pacts/toolbar-chat-api-unv-bcd-chat-pdr.json"  # Path to the Consumer Pact file
 
-        # Check if the pact file exists
-        if not os.path.isfile(pact_file_absolute):
-            raise FileNotFoundError(f"Pact file not found at {pact_file_absolute}")
-
-        # Create the file URL
-        pact_url = f'file://{pact_file_absolute}'
-
-        # Verify the pact
-        verification_result = verifier.verify_pacts(
-            provider=self.provider_name,
-            pact_urls=[pact_url],
-            publish_verification_results=False  # Set to True if publishing to Pact Broker
+        verifier = Verifier(provider="bcd-chat-pdr")
+        result = verifier.verify_pacts(
+            pact_file=pact_file,
+            provider_base_url=f"{self.provider_url}?consumer=veripark",
+            headers=self.headers
         )
+        self.assertEqual(result, 0, "Provider verification failed for 'veripark' consumer")
 
-        # Assert verification success
-        self.assertTrue(verification_result, "Pact verification failed.")
+    def test_verify_consumer_salesforce(self):
+        """
+        Verifies the contract for the 'salesforce' consumer scenario.
+        """
+        pact_file = "./pacts/toolbar-chat-api-unv-bcd-chat-pdr.json"  # Path to the Consumer Pact file
 
-if __name__ == '__main__':
+        verifier = Verifier(provider="bcd-chat-pdr")
+        result = verifier.verify_pacts(
+            pact_file=pact_file,
+            provider_base_url=f"{self.provider_url}?consumer=salesforce",
+            headers=self.headers
+        )
+        self.assertEqual(result, 0, "Provider verification failed for 'salesforce' consumer")
+
+    def test_verify_consumer_invalid(self):
+        """
+        Verifies the contract for the 'invalid' consumer scenario.
+        Expected response:
+        {
+            "data": {
+                "type": "ChatTemplates",
+                "attributes": {"templates":[]}
+            }
+        }
+        """
+        pact_file = "./pacts/toolbar-chat-api-unv-bcd-chat-pdr.json"  # Path to the Consumer Pact file
+
+        verifier = Verifier(provider="bcd-chat-pdr")
+        result = verifier.verify_pacts(
+            pact_file=pact_file,
+            provider_base_url=f"{self.provider_url}?consumer=invalid",
+            headers=self.headers
+        )
+        self.assertEqual(result, 0, "Provider verification failed for 'invalid' consumer")
+
+    def test_verify_consumer_empty(self):
+        """
+        Verifies the contract for the 'empty consumer' scenario.
+        Expected response:
+        {
+            "errors":[{"title":"BadRequest", "detail": "Empty consumer id", "status": "400"}]
+        }
+        """
+        pact_file = "./pacts/toolbar-chat-api-unv-bcd-chat-pdr.json"  # Path to the Consumer Pact file
+
+        verifier = Verifier(provider="bcd-chat-pdr")
+        result = verifier.verify_pacts(
+            pact_file=pact_file,
+            provider_base_url=f"{self.provider_url}?consumer=",
+            headers=self.headers
+        )
+        self.assertEqual(result, 0, "Provider verification failed for 'empty consumer'")
+
+    def test_verify_missing_authorization(self):
+        """
+        Verifies the contract when Authorization header is missing.
+        Expected response:
+        {
+            "message": "Unauthorized"
+        }
+        """
+        pact_file = "./pacts/toolbar-chat-api-unv-bcd-chat-pdr.json"  # Path to the Consumer Pact file
+
+        verifier = Verifier(provider="bcd-chat-pdr")
+        result = verifier.verify_pacts(
+            pact_file=pact_file,
+            provider_base_url=f"{self.provider_url}?consumer=fullserve",
+            headers={}  # No Authorization header
+        )
+        self.assertEqual(result, 0, "Provider verification failed for missing Authorization")
+
+if __name__ == "__main__":
     unittest.main()
