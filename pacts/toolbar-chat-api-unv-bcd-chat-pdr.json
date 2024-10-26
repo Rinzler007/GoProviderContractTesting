@@ -7,12 +7,41 @@
   },
   "interactions": [
     {
+      "description": "A request with blank consumer",
+      "providerState": "Chat data of  consumer exists",
+      "request": {
+        "method": "GET",
+        "path": "/bcd-dev/actions/bcd/chat-template",
+        "query": "consumer=",
+        "headers": {
+          "Authorization": "Bearer your_dynamic_token_here"
+        }
+      },
+      "response": {
+        "status": 400,
+        "headers": {
+        },
+        "body": {
+          "errors": [
+            {
+              "title": "BadRequest",
+              "detail": "Empty consumer id",
+              "status": "400"
+            }
+          ]
+        }
+      }
+    },
+    {
       "description": "A request to get chat data for fullserve",
       "providerState": "Chat data of fullserve consumer exists",
       "request": {
         "method": "GET",
-        "path": "/actions/bcd/chat-template",
-        "query": "consumer=fullserve"
+        "path": "/bcd-dev/actions/bcd/chat-template",
+        "query": "consumer=fullserve",
+        "headers": {
+          "Authorization": "Bearer your_dynamic_token_here"
+        }
       },
       "response": {
         "status": 200,
@@ -20,7 +49,7 @@
         },
         "body": {
           "data": {
-            "type": "ChatTemplate",
+            "type": "ChatTemplates",
             "attributes": {
               "templates": [
                 {
@@ -70,18 +99,42 @@
       "providerState": "Chat data of invalid consumer exists",
       "request": {
         "method": "GET",
-        "path": "/actions/bcd/chat-template",
-        "query": "consumer=invalid"
+        "path": "/bcd-dev/actions/bcd/chat-template",
+        "query": "consumer=invalid",
+        "headers": {
+          "Authorization": "Bearer your_dynamic_token_here"
+        }
       },
       "response": {
-        "status": 404,
+        "status": 200,
         "headers": {
         },
         "body": {
-          "error": {
-            "code": 404,
-            "message": "Consumer not found."
+          "data": {
+            "type": "ChatTemplates",
+            "attributes": {
+              "templates": [
+
+              ]
+            }
           }
+        }
+      }
+    },
+    {
+      "description": "A request with no Authorization header",
+      "providerState": "Chat data of fullserve consumer exists",
+      "request": {
+        "method": "GET",
+        "path": "/bcd-dev/actions/bcd/chat-template",
+        "query": "consumer=fullserve"
+      },
+      "response": {
+        "status": 401,
+        "headers": {
+        },
+        "body": {
+          "message": "Unauthorized"
         }
       }
     },
@@ -90,8 +143,11 @@
       "providerState": "Chat data of salesforce consumer exists",
       "request": {
         "method": "GET",
-        "path": "/actions/bcd/chat-template",
-        "query": "consumer=salesforce"
+        "path": "/bcd-dev/actions/bcd/chat-template",
+        "query": "consumer=salesforce",
+        "headers": {
+          "Authorization": "Bearer your_dynamic_token_here"
+        }
       },
       "response": {
         "status": 200,
@@ -99,17 +155,17 @@
         },
         "body": {
           "data": {
-            "type": "ChatTemplate",
+            "type": "ChatTemplates",
             "attributes": {
               "templates": [
                 {
-                  "id": "4",
+                  "id": "2",
                   "consumer": "salesforce",
-                  "title": "title4",
-                  "category": "category4",
-                  "message": "message4",
+                  "title": "title2",
+                  "category": "category2",
+                  "message": "message2",
                   "queues": [
-                    "queue5"
+                    "queue3"
                   ]
                 }
               ]
@@ -149,8 +205,11 @@
       "providerState": "Chat data of veripark consumer exists",
       "request": {
         "method": "GET",
-        "path": "/actions/bcd/chat-template",
-        "query": "consumer=veripark"
+        "path": "/bcd-dev/actions/bcd/chat-template",
+        "query": "consumer=veripark",
+        "headers": {
+          "Authorization": "Bearer your_dynamic_token_here"
+        }
       },
       "response": {
         "status": 200,
@@ -158,17 +217,17 @@
         },
         "body": {
           "data": {
-            "type": "ChatTemplate",
+            "type": "ChatTemplates",
             "attributes": {
               "templates": [
                 {
-                  "id": "3",
+                  "id": "2",
                   "consumer": "veripark",
-                  "title": "title3",
-                  "category": "category3",
-                  "message": "message3",
+                  "title": "title2",
+                  "category": "category2",
+                  "message": "message2",
                   "queues": [
-                    "queue4"
+                    "queue3"
                   ]
                 }
               ]
