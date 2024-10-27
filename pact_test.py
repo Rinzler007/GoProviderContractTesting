@@ -13,20 +13,17 @@ class ProviderPactTest(unittest.TestCase):
         that are required.
         """
         self.provider_url = "https://awscc-eu-dev-api.barclays.intranet/bcd-dev/actions/bcd/chat-template"
-        self.auth_token = "Bearer your_dynamic_token_here"  # Update this with the current token
-        self.headers = {
-            "Authorization": self.auth_token
-        }
+        # self.auth_token = "Bearer your_dynamic_token_here"  
+        self.header = ["Authorization: Bearer your_dynamic_token_here"] # Update this with the current token
     def test_verify_consumer_fullserve(self):
         """
         Verifies the contract for the 'fullserve' consumer scenario.
         """
         pact_file = "./pacts/toolbar-chat-api-unv-bcd-chat-pdr.json"  # Path to the Consumer Pact file
 
-        verifier = Verifier(provider="unv-bcd-chat-pdr", provider_base_url=f"{self.provider_url}?consumer=fullserve")
+        verifier = Verifier(provider="unv-bcd-chat-pdr", provider_base_url=f"{self.provider_url}?consumer=fullserve", custom_provider_headers=self.header)
         result = verifier.verify_pacts(
-            pact_file,
-            headers=self.headers
+            pact_file
         )
         self.assertEqual(result, 0, "Provider verification failed for 'fullserve' consumer")
 
@@ -36,10 +33,9 @@ class ProviderPactTest(unittest.TestCase):
         """
         pact_file = "./pacts/toolbar-chat-api-unv-bcd-chat-pdr.json"  # Path to the Consumer Pact file
 
-        verifier = Verifier(provider="unv-bcd-chat-pdr", provider_base_url=f"{self.provider_url}?consumer=veripark")
+        verifier = Verifier(provider="unv-bcd-chat-pdr", provider_base_url=f"{self.provider_url}?consumer=veripark", custom_provider_headers=self.header)
         result = verifier.verify_pacts(
-            pact_file,
-            headers=self.headers
+            pact_file
         )
         self.assertEqual(result, 0, "Provider verification failed for 'veripark' consumer")
 
@@ -49,10 +45,9 @@ class ProviderPactTest(unittest.TestCase):
         """
         pact_file = "./pacts/toolbar-chat-api-unv-bcd-chat-pdr.json"  # Path to the Consumer Pact file
 
-        verifier = Verifier(provider="unv-bcd-chat-pdr", provider_base_url=f"{self.provider_url}?consumer=salesforce")
+        verifier = Verifier(provider="unv-bcd-chat-pdr", provider_base_url=f"{self.provider_url}?consumer=salesforce", custom_provider_headers=self.header)
         result = verifier.verify_pacts(
-            pact_file,
-            headers=self.headers
+            pact_file
         )
         self.assertEqual(result, 0, "Provider verification failed for 'salesforce' consumer")
 
@@ -69,10 +64,9 @@ class ProviderPactTest(unittest.TestCase):
         """
         pact_file = "./pacts/toolbar-chat-api-unv-bcd-chat-pdr.json"  # Path to the Consumer Pact file
 
-        verifier = Verifier(provider="unv-bcd-chat-pdr", provider_base_url=f"{self.provider_url}?consumer=invalid")
+        verifier = Verifier(provider="unv-bcd-chat-pdr", provider_base_url=f"{self.provider_url}?consumer=invalid", custom_provider_headers=self.header)
         result = verifier.verify_pacts(
-            pact_file,
-            headers=self.headers
+            pact_file
         )
         self.assertEqual(result, 0, "Provider verification failed for 'invalid' consumer")
 
@@ -86,10 +80,9 @@ class ProviderPactTest(unittest.TestCase):
         """
         pact_file = "./pacts/toolbar-chat-api-unv-bcd-chat-pdr.json"  # Path to the Consumer Pact file
 
-        verifier = Verifier(provider="unv-bcd-chat-pdr", provider_base_url=f"{self.provider_url}?consumer=")
+        verifier = Verifier(provider="unv-bcd-chat-pdr", provider_base_url=f"{self.provider_url}?consumer=", custom_provider_headers=self.header)
         result = verifier.verify_pacts(
-            pact_file,
-            headers=self.headers
+            pact_file
         )
         self.assertEqual(result, 0, "Provider verification failed for 'empty consumer'")
 
@@ -105,8 +98,7 @@ class ProviderPactTest(unittest.TestCase):
 
         verifier = Verifier(provider="unv-bcd-chat-pdr", provider_base_url=f"{self.provider_url}?consumer=fullserve")
         result = verifier.verify_pacts(
-            pact_file,
-            headers={}  # No Authorization header
+            pact_file
         )
         self.assertEqual(result, 0, "Provider verification failed for missing Authorization")
 
